@@ -911,3 +911,14 @@
 ### 📝 Notas Técnicas / Justificación Académica
 - Se requería definir el comando de inicio en package.json (`node src/index.js`) ya que Render por defecto intenta ejecutar `node index.js` en la raíz, fallando al no encontrar el módulo de entrada.
 
+
+## [2026-08-07] - Refactorización de conexión a BD para Render
+**Módulo Afectado:** Base de Datos / Backend
+
+### 🔄 Modificado (Changed)
+- Se eliminó la dependencia `msnodesqlv8` que causaba errores de compilación en Linux (Render).
+- Se refactorizó `backend/src/config/db.js` para utilizar el driver nativo de `mssql` con usuario, contraseña y opciones estándar.
+
+### 📝 Notas Técnicas / Justificación Académica
+- Render utiliza contenedores Linux, por lo cual los binarios de autenticación de Windows de `msnodesqlv8` fallan al compilar el módulo de C++ `odbc_common.h` y `sql.h`. Se migró a la conexión agnóstica de SO mediante el protocolo TDS de `tedious` incluido en `mssql` nativo.
+
