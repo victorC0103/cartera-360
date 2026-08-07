@@ -38,6 +38,11 @@ export const login = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: 'Error en el servidor', error: error.message });
+        console.error("Error en login:", error);
+        res.status(500).json({ 
+            message: 'Error en el servidor', 
+            error: error.message, 
+            detalles: error.stack 
+        });
     }
 };
