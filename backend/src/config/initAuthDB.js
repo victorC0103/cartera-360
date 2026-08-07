@@ -1,6 +1,6 @@
-import { getConnection } from './db.js';
+﻿import { getConnection } from './db.js';
 import bcrypt from 'bcryptjs';
-import sql from 'mssql/msnodesqlv8.js';
+import sql from 'mssql';
 
 async function initAuthDB() {
     try {
@@ -47,7 +47,7 @@ async function initAuthDB() {
         
         process.exit(0);
     } catch (err) {
-        console.error('Error al inicializar la BD de autenticación:', err);
+        console.error('Error al inicializar la BD de autenticaciÃ³n:', err);
         process.exit(1);
     }
 }

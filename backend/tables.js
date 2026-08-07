@@ -1,4 +1,4 @@
-import { getConnection } from './src/config/db.js';
+﻿import { getConnection } from './src/config/db.js';
 
 async function run() {
     try {

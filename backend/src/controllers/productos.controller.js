@@ -1,5 +1,5 @@
-import { getConnection } from '../config/db.js';
-import sql from 'mssql/msnodesqlv8.js';
+﻿import { getConnection } from '../config/db.js';
+import sql from 'mssql';
 
 export const getAllProductos = async (req, res) => {
     try {

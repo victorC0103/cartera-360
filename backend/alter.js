@@ -1,10 +1,10 @@
-import { getConnection } from './src/config/db.js';
+﻿import { getConnection } from './src/config/db.js';
 
 async function run() {
     try {
         const pool = await getConnection();
         await pool.request().query('ALTER TABLE Abonos ADD comprobante_url NVARCHAR(255) NULL;');
-        console.log('Columna comprobante_url añadida exitosamente.');
+        console.log('Columna comprobante_url aÃ±adida exitosamente.');
         process.exit(0);
     } catch (err) {
         console.error('Error:', err);

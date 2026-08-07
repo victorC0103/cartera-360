@@ -922,3 +922,14 @@
 ### 📝 Notas Técnicas / Justificación Académica
 - Render utiliza contenedores Linux, por lo cual los binarios de autenticación de Windows de `msnodesqlv8` fallan al compilar el módulo de C++ `odbc_common.h` y `sql.h`. Se migró a la conexión agnóstica de SO mediante el protocolo TDS de `tedious` incluido en `mssql` nativo.
 
+
+## [2026-08-07] - Limpieza de dependencias msnodesqlv8 en controladores
+**Módulo Afectado:** Backend / Controladores
+
+### 🐛 Corregido (Fixed)
+- Se eliminó la importación estricta de `mssql/msnodesqlv8.js` en todos los controladores y scripts de seed (`seed_mora_500.js`, `seed_250.js`, etc.) y se reemplazó por `mssql` genérico.
+- Se actualizó el archivo `package-lock.json` localmente para purgar los rastros de la dependencia eliminada, solucionando el error de compilación en Render.
+
+### 📝 Notas Técnicas / Justificación Académica
+- Render seguía arrojando un error de `MODULE_NOT_FOUND` porque, a pesar de que modificamos la configuración principal, todos los controladores seguían importando explícitamente el paquete nativo para Windows.
+

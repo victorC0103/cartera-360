@@ -1,4 +1,4 @@
-import { getConnection } from '../config/db.js';
+﻿import { getConnection } from '../config/db.js';
 
 export const getMoraPorSector = async (req, res) => {
     try {
@@ -22,7 +22,7 @@ export const getMoraPorSector = async (req, res) => {
         res.status(200).json(result.recordset);
     } catch (error) {
         console.error('Error al obtener el ranking de mora por sector:', error);
-        res.status(500).json({ message: 'Error interno del servidor al procesar la estadística' });
+        res.status(500).json({ message: 'Error interno del servidor al procesar la estadÃ­stica' });
     }
 };
 
@@ -44,7 +44,7 @@ export const getIngresosSemana = async (req, res) => {
         res.status(200).json(result.recordset);
     } catch (error) {
         console.error('Error al obtener ingresos de la semana:', error);
-        res.status(500).json({ message: 'Error interno del servidor al procesar la estadística' });
+        res.status(500).json({ message: 'Error interno del servidor al procesar la estadÃ­stica' });
     }
 };
 
@@ -69,7 +69,7 @@ export const getEstadoCarteraPorZona = async (req, res) => {
         res.status(200).json(result.recordset);
     } catch (error) {
         console.error('Error al obtener el estado de cartera por zona:', error);
-        res.status(500).json({ message: 'Error interno del servidor al procesar la estadística' });
+        res.status(500).json({ message: 'Error interno del servidor al procesar la estadÃ­stica' });
     }
 };
 

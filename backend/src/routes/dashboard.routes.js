@@ -1,4 +1,4 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { getMoraPorSector, getIngresosSemana, getEstadoCarteraPorZona, getKpis, getAlertasCobranza } from '../controllers/dashboard.controller.js';
 
 const router = Router();

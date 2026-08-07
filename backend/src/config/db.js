@@ -1,4 +1,4 @@
-import sql from 'mssql';
+﻿import sql from 'mssql';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -11,7 +11,7 @@ const dbConfig = {
     port: parseInt(process.env.DB_PORT) || 1433,
     options: {
         encrypt: true, // For Azure or similar
-        trustServerCertificate: true // Para desarrollo local o si no hay cert SSL válido
+        trustServerCertificate: true // Para desarrollo local o si no hay cert SSL vÃ¡lido
     }
 };
 

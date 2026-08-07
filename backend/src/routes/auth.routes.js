@@ -1,9 +1,9 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { login } from '../controllers/auth.controller.js';
 
 const router = Router();
 
-// Endpoint público para iniciar sesión
+// Endpoint pÃºblico para iniciar sesiÃ³n
 router.post('/login', login);
 
 export default router;

@@ -1,9 +1,9 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { getAllVentas, getVentaById, createVenta, registerAbono, getRecaudadoHoy } from '../controllers/ventas.controller.js';
 
-// Configuración de almacenamiento de Multer
+// ConfiguraciÃ³n de almacenamiento de Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');

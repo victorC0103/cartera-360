@@ -1,5 +1,5 @@
-import { getConnection } from '../config/db.js';
-import sql from 'mssql/msnodesqlv8.js';
+﻿import { getConnection } from '../config/db.js';
+import sql from 'mssql';
 
 export const getAllVentas = async (req, res) => {
     try {
@@ -35,7 +35,7 @@ export const getAllVentas = async (req, res) => {
                     ) THEN 'Pagado'
                     ELSE 'Activo'
                 END) AS estado,
-                -- ── Artículos comprados (marca + modelo + serie) ──────────────
+                -- â”€â”€ ArtÃ­culos comprados (marca + modelo + serie) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 (
                     SELECT STRING_AGG(
                         ISNULL(ma.nombre, '') + ' ' + ISNULL(p.modelo, '') +
@@ -52,7 +52,7 @@ export const getAllVentas = async (req, res) => {
                     LEFT JOIN Marcas ma ON p.id_marca_fk = ma.id_marca
                     WHERE d.id_venta_fk = v.id_venta
                 ) AS articulos_detalle,
-                -- ── Cantidad de artículos ────────────────────────────────────
+                -- â”€â”€ Cantidad de artÃ­culos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 (
                     SELECT COUNT(*)
                     FROM Detalle_Ventas d
@@ -79,7 +79,7 @@ export const getRecaudadoHoy = async (req, res) => {
         `);
         res.json({ total: result.recordset[0].total_hoy });
     } catch (error) {
-        res.status(500).json({ message: 'Error al obtener la recaudación del día', error: error.message });
+        res.status(500).json({ message: 'Error al obtener la recaudaciÃ³n del dÃ­a', error: error.message });
     }
 };
 
@@ -167,7 +167,7 @@ export const createVenta = async (req, res) => {
             
         const id_venta = saleResult.recordset[0].id_venta;
         
-        // 2. Procesar cada artículo en la venta
+        // 2. Procesar cada artÃ­culo en la venta
         for (const art of articulos) {
             const { id_producto, precio_venta_negociado } = art;
             
@@ -193,7 +193,7 @@ export const createVenta = async (req, res) => {
                         WHERE id_serie = @id_serie
                     `);
             } else {
-                // Si no hay series físicas disponibles, creamos una de respaldo
+                // Si no hay series fÃ­sicas disponibles, creamos una de respaldo
                 const dummySerieNumber = `S-${id_producto}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
                 const newSerieResult = await transaction.request()
                     .input('id_producto', sql.Int, id_producto)
@@ -226,7 +226,7 @@ export const createVenta = async (req, res) => {
                 `);
         }
         
-        // 3. Generar la Cartilla de Amortización (Cuotas_Amortizacion)
+        // 3. Generar la Cartilla de AmortizaciÃ³n (Cuotas_Amortizacion)
         const cuotaBase = total_con_intereses / cantidad_cuotas;
         const cuotaExacta = parseFloat(cuotaBase.toFixed(2));
         
@@ -243,7 +243,7 @@ export const createVenta = async (req, res) => {
                 fechaVencimiento.setMonth(fechaVencimiento.getMonth() + i);
             }
             
-            // Determinar si es la última cuota (Ajuste) o una cuota normal exacta
+            // Determinar si es la Ãºltima cuota (Ajuste) o una cuota normal exacta
             let montoCuotaActual;
             if (i === cantidad_cuotas) {
                 montoCuotaActual = parseFloat((total_con_intereses - sumaAcumulada).toFixed(2));
@@ -268,10 +268,10 @@ export const createVenta = async (req, res) => {
         }
         
         await transaction.commit();
-        res.status(201).json({ message: 'Contrato y amortización registrados correctamente', id_venta });
+        res.status(201).json({ message: 'Contrato y amortizaciÃ³n registrados correctamente', id_venta });
     } catch (error) {
         await transaction.rollback();
-        res.status(500).json({ message: 'Error al registrar la venta a crédito', error: error.message });
+        res.status(500).json({ message: 'Error al registrar la venta a crÃ©dito', error: error.message });
     }
 };
 
@@ -280,7 +280,7 @@ export const registerAbono = async (req, res) => {
     const comprobante_url = req.file ? `/uploads/${req.file.filename}` : null;
     
     if (!id_venta || !monto_cobrado || isNaN(monto_cobrado) || monto_cobrado <= 0) {
-        return res.status(400).json({ message: 'Datos de abono inválidos' });
+        return res.status(400).json({ message: 'Datos de abono invÃ¡lidos' });
     }
     
     const pool = await getConnection();
@@ -303,7 +303,7 @@ export const registerAbono = async (req, res) => {
         
         if (cuotas.length === 0) {
             await transaction.rollback();
-            return res.status(400).json({ message: 'Este contrato de crédito ya está completamente pagado.' });
+            return res.status(400).json({ message: 'Este contrato de crÃ©dito ya estÃ¡ completamente pagado.' });
         }
         
         for (const cuota of cuotas) {
@@ -348,7 +348,7 @@ export const registerAbono = async (req, res) => {
             `);
         
         await transaction.commit();
-        res.status(200).json({ message: 'Abono registrado con éxito.' });
+        res.status(200).json({ message: 'Abono registrado con Ã©xito.' });
     } catch (error) {
         await transaction.rollback();
         res.status(500).json({ message: 'Error al registrar el abono', error: error.message });

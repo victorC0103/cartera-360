@@ -1,5 +1,5 @@
-import { getConnection } from './src/config/db.js';
-import sql from 'mssql/msnodesqlv8.js';
+﻿import { getConnection } from './src/config/db.js';
+import sql from 'mssql';
 import { createVenta } from './src/controllers/ventas.controller.js';
 
 const nombresNombres = ['Carlos', 'Maria', 'Juan', 'Jose', 'Luis', 'Ana', 'Carmen', 'Jorge', 'Pedro', 'Rosa', 'Miguel', 'Sofia', 'Lucia', 'Diego', 'Fernando', 'Valeria', 'Roberto', 'Camila', 'Alejandro', 'Diana'];
@@ -118,7 +118,7 @@ async function seedMora() {
             WHERE estado_cuota = 'PENDIENTE' AND fecha_vencimiento < GETDATE()
         `);
         
-        console.log('✅ Proceso de seed finalizado con éxito.');
+        console.log('âœ… Proceso de seed finalizado con Ã©xito.');
         process.exit(0);
     } catch (err) {
         console.error('Error:', err);

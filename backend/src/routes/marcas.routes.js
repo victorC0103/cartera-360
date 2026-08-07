@@ -1,4 +1,4 @@
-import { Router } from 'express';
+﻿import { Router } from 'express';
 import { getAllMarcas, createMarca } from '../controllers/marcas.controller.js';
 
 const router = Router();

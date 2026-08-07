@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { getConnection } from './config/db.js';
@@ -22,11 +22,11 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// Rutas de la API (Públicas)
+// Rutas de la API (PÃºblicas)
 app.use('/api/auth', authRoutes);
 
 // Middleware Global de Seguridad para el resto de la API
-app.use('/api', verifyToken); // Todas las rutas debajo de esta línea requerirán token JWT
+app.use('/api', verifyToken); // Todas las rutas debajo de esta lÃ­nea requerirÃ¡n token JWT
 
 // Rutas de la API (Protegidas)
 app.use('/api/clientes', clientesRoutes);
@@ -38,16 +38,16 @@ app.use('/api/ventas', ventasRoutes);
 app.use('/api/cartillas', cartillasRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// Verificar conexión a la BD
+// Verificar conexiÃ³n a la BD
 getConnection().then(() => {
-    console.log('Conexión a la base de datos establecida correctamente.');
+    console.log('ConexiÃ³n a la base de datos establecida correctamente.');
 }).catch((error) => {
     console.error('Error inicial al conectar a la BD:', error);
 });
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-    res.send('Servidor Backend ERP CrediRuta (Cartera360) en línea.');
+    res.send('Servidor Backend ERP CrediRuta (Cartera360) en lÃ­nea.');
 });
 
 const PORT = process.env.PORT || 3000;

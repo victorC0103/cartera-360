@@ -1,16 +1,16 @@
-import { getConnection } from './src/config/db.js';
+﻿import { getConnection } from './src/config/db.js';
 
 async function seed() {
   try {
     const pool = await getConnection();
 
-    // ── Insertar Cantones (solo si no existen) ──
+    // â”€â”€ Insertar Cantones (solo si no existen) â”€â”€
     const cantones = [
       [1, 'Milagro'],
       [2, 'Naranjito'],
-      [3, 'Marcelino Maridueña'],
+      [3, 'Marcelino MaridueÃ±a'],
       [4, 'Yaguachi'],
-      [5, 'Simón Bolívar'],
+      [5, 'SimÃ³n BolÃ­var'],
       [6, 'Naranjal'],
       [7, 'El Triunfo'],
       [8, 'Bucay'],
@@ -34,14 +34,14 @@ async function seed() {
         `);
     }
 
-    // ── Insertar Sectores (solo si no existen) ──
+    // â”€â”€ Insertar Sectores (solo si no existen) â”€â”€
     const sectores = [
       // Milagro
       [1,  1, 'Centro de Milagro', 'URBANA'],
-      [2,  1, 'Cdla. Las Piñas', 'URBANA'],
+      [2,  1, 'Cdla. Las PiÃ±as', 'URBANA'],
       [3,  1, 'Cdla. Los Helechos', 'URBANA'],
       [4,  1, 'Cdla. Bellavista', 'URBANA'],
-      [5,  1, 'Km 26 (vía Milagro-Naranjito)', 'RURAL'],
+      [5,  1, 'Km 26 (vÃ­a Milagro-Naranjito)', 'RURAL'],
       [6,  1, 'Roberto Astudillo', 'RURAL'],
       [7,  1, 'Chobo', 'RURAL'],
       [8,  1, 'Mariscal Sucre', 'RURAL'],
@@ -49,21 +49,21 @@ async function seed() {
       [9,  2, 'Centro de Naranjito', 'URBANA'],
       [10, 2, 'Barraganetal', 'RURAL'],
       [11, 2, 'San Francisco de Chaguarpamba', 'RURAL'],
-      // Marcelino Maridueña
-      [12, 3, 'Centro de Marcelino Maridueña', 'URBANA'],
+      // Marcelino MaridueÃ±a
+      [12, 3, 'Centro de Marcelino MaridueÃ±a', 'URBANA'],
       [13, 3, 'San Carlos (Ingenio)', 'RURAL'],
       // Yaguachi
       [14, 4, 'Yaguachi Nuevo', 'URBANA'],
       [15, 4, 'Yaguachi Viejo (Cone)', 'RURAL'],
-      [16, 4, 'Virgen de Fátima', 'RURAL'],
+      [16, 4, 'Virgen de FÃ¡tima', 'RURAL'],
       [17, 4, 'Pedro J. Montero (Boliche)', 'RURAL'],
-      // Simón Bolívar
-      [18, 5, 'Centro de Simón Bolívar', 'URBANA'],
+      // SimÃ³n BolÃ­var
+      [18, 5, 'Centro de SimÃ³n BolÃ­var', 'URBANA'],
       [19, 5, 'Lorenzo de Garaicoa', 'RURAL'],
       // Naranjal
       [20, 6, 'Centro de Naranjal', 'URBANA'],
       [21, 6, 'Taura', 'RURAL'],
-      [22, 6, 'Jesús María', 'RURAL'],
+      [22, 6, 'JesÃºs MarÃ­a', 'RURAL'],
       // El Triunfo
       [23, 7, 'Centro de El Triunfo', 'URBANA'],
       [24, 7, 'Manuel de J. Calle', 'RURAL'],
@@ -92,14 +92,14 @@ async function seed() {
         `);
     }
 
-    // ── Insertar Categorías ──
+    // â”€â”€ Insertar CategorÃ­as â”€â”€
     const categoriasList = [
       [1, 'Refrigeradoras'],
       [2, 'Lavadoras'],
       [3, 'Televisores'],
       [4, 'Cocinas'],
       [5, 'Aires Acondicionados'],
-      [6, 'Pequeños Electrodomésticos']
+      [6, 'PequeÃ±os ElectrodomÃ©sticos']
     ];
 
     for (const [id, nombre] of categoriasList) {
@@ -120,7 +120,7 @@ async function seed() {
         `);
     }
 
-    // ── Insertar Marcas ──
+    // â”€â”€ Insertar Marcas â”€â”€
     const marcasList = [
       [1, 'Samsung'],
       [2, 'LG'],
@@ -149,10 +149,10 @@ async function seed() {
         `);
     }
 
-    console.log('✅ Seed completado: cantones, sectores, categorías y marcas sincronizadas.');
+    console.log('âœ… Seed completado: cantones, sectores, categorÃ­as y marcas sincronizadas.');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error en seed:', error);
+    console.error('âŒ Error en seed:', error);
     process.exit(1);
   }
 }

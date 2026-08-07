@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
+﻿import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { getConnection } from '../config/db.js';
-import sql from 'mssql/msnodesqlv8.js';
+import sql from 'mssql';
 
 export const login = async (req, res) => {
     try {
@@ -18,11 +18,11 @@ export const login = async (req, res) => {
             return res.status(401).json({ message: 'Usuario no encontrado' });
         }
 
-        // Verificamos la contraseña usando bcryptjs
+        // Verificamos la contraseÃ±a usando bcryptjs
         const isMatch = await bcrypt.compare(password, dbUser.password_hash);
 
         if (!isMatch) {
-            return res.status(401).json({ message: 'Contraseña incorrecta' });
+            return res.status(401).json({ message: 'ContraseÃ±a incorrecta' });
         }
 
         // Generar JWT que firma el id y el rol del usuario

@@ -1,5 +1,5 @@
-import { getConnection } from '../config/db.js';
-import sql from 'mssql/msnodesqlv8.js';
+﻿import { getConnection } from '../config/db.js';
+import sql from 'mssql';
 
 export const procesarImportacionMasiva = async (req, res) => {
     const { registros } = req.body;
@@ -77,7 +77,7 @@ export const procesarImportacionMasiva = async (req, res) => {
                 .input('monto_total_productos', sql.Decimal(10, 2), totalVal)
                 .input('valor_entrada', sql.Decimal(10, 2), entradaVal)
                 .input('monto_a_financiar', sql.Decimal(10, 2), saldoVal)
-                .input('total_con_intereses', sql.Decimal(10, 2), saldoVal) // Para históricos asumimos intereses incluidos o entrada resta
+                .input('total_con_intereses', sql.Decimal(10, 2), saldoVal) // Para histÃ³ricos asumimos intereses incluidos o entrada resta
                 .input('cantidad_cuotas', sql.Int, cantCuotas)
                 .input('frecuencia_pago', sql.NVarChar(50), freq)
                 .query(`
@@ -88,7 +88,7 @@ export const procesarImportacionMasiva = async (req, res) => {
 
             const id_venta = saleRes.recordset[0].id_venta;
 
-            // 3. Generar la Cartilla de Amortización (Cuotas_Amortizacion)
+            // 3. Generar la Cartilla de AmortizaciÃ³n (Cuotas_Amortizacion)
             if (cantCuotas > 0 && saldoVal > 0) {
                 const valorCuotaIndividual = cuotaVal > 0 ? cuotaVal : (saldoVal / cantCuotas);
                 
@@ -124,13 +124,13 @@ export const procesarImportacionMasiva = async (req, res) => {
 
         await transaction.commit();
         res.status(201).json({ 
-            message: 'Importación masiva completada con éxito.',
+            message: 'ImportaciÃ³n masiva completada con Ã©xito.',
             contratosProcesados: procesadosContratos,
             clientesCreados: creadosClientes
         });
     } catch (error) {
         await transaction.rollback();
-        res.status(500).json({ message: 'Error al procesar la importación masiva', error: error.message });
+        res.status(500).json({ message: 'Error al procesar la importaciÃ³n masiva', error: error.message });
     }
 };
 

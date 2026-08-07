@@ -1,5 +1,5 @@
-import { getConnection } from './src/config/db.js';
-import sql from 'mssql/msnodesqlv8.js';
+﻿import { getConnection } from './src/config/db.js';
+import sql from 'mssql';
 import { createVenta } from './src/controllers/ventas.controller.js';
 
 const nombresNombres = ['Carlos', 'Maria', 'Juan', 'Jose', 'Luis', 'Ana', 'Carmen', 'Jorge', 'Pedro', 'Rosa'];
@@ -9,7 +9,7 @@ function randomElement(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function getRandomCédula() {
+function getRandomCÃ©dula() {
     return '09' + Math.floor(10000000 + Math.random() * 90000000).toString();
 }
 
@@ -49,7 +49,7 @@ async function seed() {
                 .input('id_sector_fk', sql.Int, id_sector)
                 .input('nombres', sql.NVarChar, randomElement(nombresNombres) + ' ' + randomElement(nombresNombres))
                 .input('apellidos', sql.NVarChar, randomElement(apellidosNombres) + ' ' + randomElement(apellidosNombres))
-                .input('cedula', sql.NVarChar, getRandomCédula())
+                .input('cedula', sql.NVarChar, getRandomCÃ©dula())
                 .input('telefono_principal', sql.NVarChar, '0999999999')
                 .input('direccion_detallada', sql.NVarChar, 'Direccion de prueba ' + i)
                 .query(`
@@ -102,7 +102,7 @@ async function seed() {
             }
         }
 
-        console.log('✅ Proceso de seed 250 registros finalizado.');
+        console.log('âœ… Proceso de seed 250 registros finalizado.');
         process.exit(0);
     } catch (err) {
         console.error('Error en el proceso:', err);

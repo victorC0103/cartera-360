@@ -1,7 +1,7 @@
-import { getConnection } from '../config/db.js';
-import sql from 'mssql/msnodesqlv8.js';
+﻿import { getConnection } from '../config/db.js';
+import sql from 'mssql';
 
-// ── CANTONES ──
+// â”€â”€ CANTONES â”€â”€
 export const getAllCantones = async (req, res) => {
     try {
         const pool = await getConnection();
@@ -19,13 +19,13 @@ export const createCanton = async (req, res) => {
         await pool.request()
             .input('nombre', sql.NVarChar, nombre)
             .query('INSERT INTO Cantones (nombre) VALUES (@nombre)');
-        res.status(201).json({ message: 'Cantón creado correctamente' });
+        res.status(201).json({ message: 'CantÃ³n creado correctamente' });
     } catch (error) {
-        res.status(500).json({ message: 'Error al crear cantón', error: error.message });
+        res.status(500).json({ message: 'Error al crear cantÃ³n', error: error.message });
     }
 };
 
-// ── SECTORES ──
+// â”€â”€ SECTORES â”€â”€
 export const getAllSectores = async (req, res) => {
     try {
         const pool = await getConnection();
