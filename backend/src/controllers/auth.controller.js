@@ -1,28 +1,24 @@
-﻿import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { getConnection } from '../config/db.js';
-import sql from 'mssql';
+import pool from '../config/db.js';
 
 export const login = async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        const pool = await getConnection();
-        const userRes = await pool.request()
-            .input('username', sql.NVarChar, username)
-            .query('SELECT * FROM Usuarios WHERE username = @username');
+        const userRes = await pool.query('SELECT * FROM Usuarios WHERE username = $1', [username]);
 
-        const dbUser = userRes.recordset[0];
+        const dbUser = userRes.rows[0];
 
         if (!dbUser) {
             return res.status(401).json({ message: 'Usuario no encontrado' });
         }
 
-        // Verificamos la contraseÃ±a usando bcryptjs
+        // Verificamos la contraseña usando bcryptjs
         const isMatch = await bcrypt.compare(password, dbUser.password_hash);
 
         if (!isMatch) {
-            return res.status(401).json({ message: 'ContraseÃ±a incorrecta' });
+            return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
 
         // Generar JWT que firma el id y el rol del usuario

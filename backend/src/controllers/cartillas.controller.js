@@ -1,5 +1,4 @@
-﻿import { getConnection } from '../config/db.js';
-import sql from 'mssql';
+import pool from '../config/db.js';
 
 export const procesarImportacionMasiva = async (req, res) => {
     const { registros } = req.body;
@@ -8,14 +7,13 @@ export const procesarImportacionMasiva = async (req, res) => {
         return res.status(400).json({ message: 'No se enviaron registros para importar.' });
     }
 
-    const pool = await getConnection();
-    const transaction = new sql.Transaction(pool);
+    const client = await pool.connect();
     
     let creadosClientes = 0;
     let procesadosContratos = 0;
 
     try {
-        await transaction.begin();
+        await client.query('BEGIN');
         
         for (const reg of registros) {
             const { 
@@ -29,35 +27,26 @@ export const procesarImportacionMasiva = async (req, res) => {
                 estado 
             } = reg;
 
-            // 1. Validar existencia del cliente
-            let clientRes = await transaction.request()
-                .input('cedula', sql.NVarChar(20), String(cedula_cliente).trim())
-                .query('SELECT id_cliente FROM Clientes WHERE cedula = @cedula');
+            let clientRes = await client.query('SELECT id_cliente FROM Clientes WHERE cedula = $1', [String(cedula_cliente).trim()]);
 
             let id_cliente;
-            if (clientRes.recordset.length > 0) {
-                id_cliente = clientRes.recordset[0].id_cliente;
+            if (clientRes.rows.length > 0) {
+                id_cliente = clientRes.rows[0].id_cliente;
             } else {
-                // Si el cliente no existe, lo creamos
-                // Separar nombres y apellidos (dividir por espacios)
                 const nameParts = (nombres_cliente || 'Importado').trim().split(/\s+/);
                 const nombres = nameParts[0] || 'Importado';
                 const apellidos = nameParts.slice(1).join(' ') || 'Importado';
 
-                const newClientRes = await transaction.request()
-                    .input('cedula', sql.NVarChar(20), String(cedula_cliente).trim())
-                    .input('nombres', sql.NVarChar(100), nombres)
-                    .input('apellidos', sql.NVarChar(100), apellidos)
-                    .query(`
-                        INSERT INTO Clientes (cedula, nombres, apellidos, id_sector_fk, estado_cliente)
-                        OUTPUT INSERTED.id_cliente
-                        VALUES (@cedula, @nombres, @apellidos, 1, 'ACTIVO')
-                    `);
-                id_cliente = newClientRes.recordset[0].id_cliente;
+                const newClientRes = await client.query(`
+                    INSERT INTO Clientes (cedula, nombres, apellidos, id_sector_fk, estado_cliente)
+                    VALUES ($1, $2, $3, 1, 'ACTIVO')
+                    RETURNING id_cliente
+                `, [String(cedula_cliente).trim(), nombres, apellidos]);
+                
+                id_cliente = newClientRes.rows[0].id_cliente;
                 creadosClientes++;
             }
 
-            // 2. Insertar el Contrato Financiero (Ventas_Credito)
             const totalVal = parseFloat(monto_total) || 0;
             const saldoVal = parseFloat(saldo_pendiente) !== undefined ? parseFloat(saldo_pendiente) : totalVal;
             const cuotaVal = parseFloat(valor_cuota) || 0;
@@ -65,30 +54,19 @@ export const procesarImportacionMasiva = async (req, res) => {
             const freq = (frecuencia_pago || 'Mensual').trim();
             const dateEmision = fecha_emision ? new Date(fecha_emision) : new Date();
 
-            // Calcular cantidad de cuotas
             let cantCuotas = 12;
             if (cuotaVal > 0) {
                 cantCuotas = Math.ceil(saldoVal / cuotaVal);
             }
 
-            const saleRes = await transaction.request()
-                .input('id_cliente_fk', sql.Int, id_cliente)
-                .input('fecha_venta', sql.DateTime, dateEmision)
-                .input('monto_total_productos', sql.Decimal(10, 2), totalVal)
-                .input('valor_entrada', sql.Decimal(10, 2), entradaVal)
-                .input('monto_a_financiar', sql.Decimal(10, 2), saldoVal)
-                .input('total_con_intereses', sql.Decimal(10, 2), saldoVal) // Para histÃ³ricos asumimos intereses incluidos o entrada resta
-                .input('cantidad_cuotas', sql.Int, cantCuotas)
-                .input('frecuencia_pago', sql.NVarChar(50), freq)
-                .query(`
-                    INSERT INTO Ventas_Credito (id_cliente_fk, fecha_venta, monto_total_productos, valor_entrada, monto_a_financiar, total_con_intereses, cantidad_cuotas, frecuencia_pago)
-                    OUTPUT INSERTED.id_venta
-                    VALUES (@id_cliente_fk, @fecha_venta, @monto_total_productos, @valor_entrada, @monto_a_financiar, @total_con_intereses, @cantidad_cuotas, @frecuencia_pago)
-                `);
+            const saleRes = await client.query(`
+                INSERT INTO Ventas_Credito (id_cliente_fk, fecha_venta, monto_total_productos, valor_entrada, monto_a_financiar, total_con_intereses, cantidad_cuotas, frecuencia_pago)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                RETURNING id_venta
+            `, [id_cliente, dateEmision, totalVal, entradaVal, saldoVal, saldoVal, cantCuotas, freq]);
 
-            const id_venta = saleRes.recordset[0].id_venta;
+            const id_venta = saleRes.rows[0].id_venta;
 
-            // 3. Generar la Cartilla de AmortizaciÃ³n (Cuotas_Amortizacion)
             if (cantCuotas > 0 && saldoVal > 0) {
                 const valorCuotaIndividual = cuotaVal > 0 ? cuotaVal : (saldoVal / cantCuotas);
                 
@@ -98,50 +76,42 @@ export const procesarImportacionMasiva = async (req, res) => {
                         fechaVencimiento.setDate(fechaVencimiento.getDate() + (i * 7));
                     } else if (freq === 'Quincenal') {
                         fechaVencimiento.setDate(fechaVencimiento.getDate() + (i * 15));
-                    } else { // Mensual
+                    } else { 
                         fechaVencimiento.setMonth(fechaVencimiento.getMonth() + i);
                     }
 
                     const cuotaSaldo = Math.min(valorCuotaIndividual, Math.max(0, saldoVal - (valorCuotaIndividual * (i - 1))));
                     const cuotaEstado = (estado || 'PENDIENTE').toUpperCase();
 
-                    await transaction.request()
-                        .input('id_venta_fk', sql.Int, id_venta)
-                        .input('numero_cuota', sql.Int, i)
-                        .input('fecha_vencimiento', sql.Date, fechaVencimiento)
-                        .input('monto_cuota', sql.Decimal(10, 2), valorCuotaIndividual)
-                        .input('saldo_pendiente', sql.Decimal(10, 2), cuotaSaldo)
-                        .input('estado_cuota', sql.NVarChar(50), cuotaEstado)
-                        .query(`
-                            INSERT INTO Cuotas_Amortizacion (id_venta_fk, numero_cuota, fecha_vencimiento, monto_cuota, saldo_pendiente, estado_cuota)
-                            VALUES (@id_venta_fk, @numero_cuota, @fecha_vencimiento, @monto_cuota, @saldo_pendiente, @estado_cuota)
-                        `);
+                    await client.query(`
+                        INSERT INTO Cuotas_Amortizacion (id_venta_fk, numero_cuota, fecha_vencimiento, monto_cuota, saldo_pendiente, estado_cuota)
+                        VALUES ($1, $2, $3, $4, $5, $6)
+                    `, [id_venta, i, fechaVencimiento, valorCuotaIndividual, cuotaSaldo, cuotaEstado]);
                 }
             }
 
             procesadosContratos++;
         }
 
-        await transaction.commit();
+        await client.query('COMMIT');
         res.status(201).json({ 
-            message: 'ImportaciÃ³n masiva completada con Ã©xito.',
+            message: 'Importación masiva completada con éxito.',
             contratosProcesados: procesadosContratos,
             clientesCreados: creadosClientes
         });
     } catch (error) {
-        await transaction.rollback();
-        res.status(500).json({ message: 'Error al procesar la importaciÃ³n masiva', error: error.message });
+        await client.query('ROLLBACK');
+        res.status(500).json({ message: 'Error al procesar la importación masiva', error: error.message });
+    } finally {
+        client.release();
     }
 };
 
 export const getAbonosByCartilla = async (req, res) => {
     const { id } = req.params;
     try {
-        const pool = await getConnection();
-        const result = await pool.request()
-            .input('id_cartilla', sql.Int, id)
-            .query('SELECT * FROM Abonos WHERE id_cartilla = @id_cartilla ORDER BY fecha_registro DESC');
-        res.json(result.recordset);
+        const result = await pool.query('SELECT * FROM Abonos WHERE id_cartilla = $1 ORDER BY fecha_registro DESC', [id]);
+        res.json(result.rows);
     } catch (error) {
         res.status(500).json({ message: 'Error al obtener el historial de abonos', error: error.message });
     }

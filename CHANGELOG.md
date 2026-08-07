@@ -933,3 +933,36 @@
 ### 📝 Notas Técnicas / Justificación Académica
 - Render seguía arrojando un error de `MODULE_NOT_FOUND` porque, a pesar de que modificamos la configuración principal, todos los controladores seguían importando explícitamente el paquete nativo para Windows.
 
+
+## [2026-08-07] - Migración Arquitectónica: De SQL Server a PostgreSQL
+**Módulo Afectado:** Base de Datos / Backend
+
+### 🚀 Añadido (Added)
+- Soporte completo para PostgreSQL mediante la librería \pg\.
+- Nueva configuración de conexión a la BD en \db.js\ utilizando \Pool\ de Postgres.
+
+### 🔄 Modificado (Changed)
+- Esquema de base de datos original reescrito completamente para sintaxis estándar de PostgreSQL (\SERIAL\, \TIMESTAMP\, etc.) en \database.sql\.
+- Refactorización masiva de TODOS los controladores (auth, ventas, cartillas, catalogos, categorias, clientes, marcas, productos) para reemplazar el dialecto T-SQL (\equest.input()\) por la parametrización segura de Postgres (\$1, \).
+
+### 🗑️ Eliminado (Removed)
+- Dependencia nativa \mssql\.
+- Scripts de semilla (seeders) desactualizados que dependían de sentencias estáticas de SQL Server (se delegará la inserción a los endpoints del API o a comandos estándar de Postgres).
+
+### 📝 Notas Técnicas / Justificación Académica
+- La migración permite compatibilidad total con infraestructuras en la nube basadas en Linux (como Render). El uso de la parametrización de \pg\ garantiza mitigación frente a inyecciones SQL y un menor overhead en memoria comparado con las sentencias complejas de TDS requeridas por SQL Server.
+
+
+## [2026-08-07] - Corrección de literales de plantilla en Ventas
+**Módulo Afectado:** Backend / Controladores
+
+### 🐛 Corregido (Fixed)
+- Se corrigieron los backticks y literales de plantilla (template strings) escapados accidentalmente durante la migración a Postgres en \entas.controller.js\ y \cartillas.controller.js\.
+
+
+## [2026-08-07] - Refactorización de Dashboard Controller
+**Módulo Afectado:** Backend / Controladores
+
+### 🐛 Corregido (Fixed)
+- Se migró \dashboard.controller.js\ a Postgres. Se reemplazó \pool.request()\ por \pool.query()\ y se actualizaron funciones de SQL Server a Postgres (\TOP 5\ -> \LIMIT 5\, \DATEADD\/\DATEDIFF\ -> \CURRENT_DATE - INTERVAL\, etc.) que causaban crasheos en el arranque o peticiones al dashboard.
+
