@@ -7,7 +7,7 @@ import pool from './db.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-async function setupRenderDB() {
+export async function setupRenderDB() {
     try {
         console.log('1. Conectando a la BD...');
         
@@ -49,12 +49,8 @@ async function setupRenderDB() {
         }
 
         console.log('¡Inicialización de base de datos completada!');
-        process.exit(0);
     } catch (err) {
         console.error('Error fatal durante la inicialización:', err);
         console.log('Continuando el arranque a pesar del error...');
-        process.exit(0); // Exit 0 so the deploy doesn't fail and we can debug
     }
 }
-
-setupRenderDB();

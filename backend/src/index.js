@@ -1,7 +1,8 @@
-﻿import express from 'express';
+import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { getConnection } from './config/db.js';
+import { setupRenderDB } from './config/setup_render.js';
 import authRoutes from './routes/auth.routes.js';
 import clientesRoutes from './routes/clientes.routes.js';
 import productosRoutes from './routes/productos.routes.js';
@@ -38,9 +39,10 @@ app.use('/api/ventas', ventasRoutes);
 app.use('/api/cartillas', cartillasRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// Verificar conexiÃ³n a la BD
-getConnection().then(() => {
+// Verificar conexiÃ³n a la BD e inicializar tablas/usuarios
+getConnection().then(async () => {
     console.log('ConexiÃ³n a la base de datos establecida correctamente.');
+    await setupRenderDB();
 }).catch((error) => {
     console.error('Error inicial al conectar a la BD:', error);
 });
