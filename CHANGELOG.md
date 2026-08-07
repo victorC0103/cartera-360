@@ -966,3 +966,15 @@
 ### 🐛 Corregido (Fixed)
 - Se migró \dashboard.controller.js\ a Postgres. Se reemplazó \pool.request()\ por \pool.query()\ y se actualizaron funciones de SQL Server a Postgres (\TOP 5\ -> \LIMIT 5\, \DATEADD\/\DATEDIFF\ -> \CURRENT_DATE - INTERVAL\, etc.) que causaban crasheos en el arranque o peticiones al dashboard.
 
+
+## [2026-08-07] - Generación de Data Falsa Realista
+**Módulo Afectado:** Base de Datos / Backend
+
+### 🚀 Añadido (Added)
+- Se creó \generate_fake_data.js\ para popular dinámicamente la base de datos vacía en Render con datos ultrarrealistas para demostración.
+- Se insertan Cantones, Sectores, Marcas, Categorías, Productos (con Series) y 50 Clientes.
+- Se generan 50 ventas a crédito retroactivas (de hace 1 a 6 meses), calculando cuotas vencidas y simulando pagos o estado de MORA de forma aleatoria para darle vida al Dashboard.
+
+### 🔄 Modificado (Changed)
+- \setup_render.js\ ahora invoca la semilla de datos falsos de forma automática al iniciar la app si detecta que la tabla Clientes está vacía.
+

@@ -48,6 +48,10 @@ export async function setupRenderDB() {
             console.log('Los usuarios ya existen.');
         }
 
+        // 4. Generar datos de prueba realistas (Cantones, Sectores, Categorias, Marcas, Productos, Clientes, Ventas)
+        const { generateFakeData } = await import('./generate_fake_data.js');
+        await generateFakeData();
+
         console.log('¡Inicialización de base de datos completada!');
     } catch (err) {
         console.error('Error fatal durante la inicialización:', err);
