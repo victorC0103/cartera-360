@@ -14,10 +14,23 @@ async function setupRenderDB() {
         // Ejecutar DDL
         const sqlPath = path.resolve(__dirname, '../../../database.sql');
         if (fs.existsSync(sqlPath)) {
-            console.log('2. Creando tablas desde database.sql...');
-            const sqlContent = fs.readFileSync(sqlPath, 'utf8');
-            await pool.query(sqlContent);
-            console.log('Tablas creadas con éxito.');
+            const tableCheck = await pool.query(`
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_schema = 'public' 
+                    AND table_name = 'usuarios'
+                );
+            `);
+            const tablesExist = tableCheck.rows[0].exists;
+            
+            if (!tablesExist) {
+                console.log('2. Creando tablas desde database.sql...');
+                const sqlContent = fs.readFileSync(sqlPath, 'utf8');
+                await pool.query(sqlContent);
+                console.log('Tablas creadas con éxito.');
+            } else {
+                console.log('2. Las tablas ya existen, omitiendo DDL.');
+            }
         } else {
             console.log('Advertencia: No se encontró database.sql en', sqlPath);
         }
