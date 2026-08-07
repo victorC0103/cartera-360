@@ -901,3 +901,13 @@
 
 
 
+
+## [2026-08-07] - Configuración de Inicio para Render
+**Módulo Afectado:** Backend / Infraestructura
+
+### 🚀 Añadido (Added)
+- Script de inicio `start` en `backend/package.json` para permitir el despliegue automático en Render.
+
+### 📝 Notas Técnicas / Justificación Académica
+- Se requería definir el comando de inicio en package.json (`node src/index.js`) ya que Render por defecto intenta ejecutar `node index.js` en la raíz, fallando al no encontrar el módulo de entrada.
+
