@@ -978,3 +978,12 @@
 ### 🔄 Modificado (Changed)
 - \setup_render.js\ ahora invoca la semilla de datos falsos de forma automática al iniciar la app si detecta que la tabla Clientes está vacía.
 
+
+## [2026-08-07] - Corrección de Pantalla Blanca en Dashboard
+**Módulo Afectado:** Frontend y Backend (Dashboard)
+
+### 🐛 Corregido (Fixed)
+- Se solucionó un error fatal en React que causaba una pantalla blanca al cargar el Dashboard cuando existían alertas de mora.
+- El driver de PostgreSQL (pg) retorna los resultados de funciones agregadas (\SUM\) como strings por seguridad de precisión. Al intentar usar \.toFixed(2)\ en un string, la UI explotaba.
+- Se implementó un casteo a \loat\ directo en el controlador de backend para todas las variables totalizadoras y se forzó casteo de seguridad en el frontend.
+

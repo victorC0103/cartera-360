@@ -17,8 +17,11 @@ export const getMoraPorSector = async (req, res) => {
         `;
 
         const result = await pool.query(query);
-
-        res.status(200).json(result.rows);
+        const formatted = result.rows.map(row => ({
+            ...row,
+            total_mora: parseFloat(row.total_mora)
+        }));
+        res.status(200).json(formatted);
     } catch (error) {
         console.error('Error al obtener el ranking de mora por sector:', error);
         res.status(500).json({ message: 'Error interno del servidor al procesar la estadística' });
@@ -38,7 +41,11 @@ export const getIngresosSemana = async (req, res) => {
         `;
 
         const result = await pool.query(query);
-        res.status(200).json(result.rows);
+        const formatted = result.rows.map(row => ({
+            ...row,
+            total_ingresos: parseFloat(row.total_ingresos)
+        }));
+        res.status(200).json(formatted);
     } catch (error) {
         console.error('Error al obtener ingresos de la semana:', error);
         res.status(500).json({ message: 'Error interno del servidor al procesar la estadística' });
@@ -61,7 +68,11 @@ export const getEstadoCarteraPorZona = async (req, res) => {
         `;
 
         const result = await pool.query(query);
-        res.status(200).json(result.rows);
+        const formatted = result.rows.map(row => ({
+            ...row,
+            total_cartera: parseFloat(row.total_cartera)
+        }));
+        res.status(200).json(formatted);
     } catch (error) {
         console.error('Error al obtener el estado de cartera por zona:', error);
         res.status(500).json({ message: 'Error interno del servidor al procesar la estadística' });
@@ -133,7 +144,11 @@ export const getAlertasCobranza = async (req, res) => {
         `;
         
         const result = await pool.query(query);
-        res.status(200).json(result.rows);
+        const formatted = result.rows.map(row => ({
+            ...row,
+            monto: parseFloat(row.monto)
+        }));
+        res.status(200).json(formatted);
     } catch (error) {
         console.error('Error al obtener alertas:', error);
         res.status(500).json({ message: 'Error interno del servidor' });

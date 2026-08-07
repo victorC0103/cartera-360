@@ -210,7 +210,7 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="px-7 py-4 font-black text-slate-800 text-right">
-                      ${row.monto.toFixed(2)}
+                      ${Number(row.monto).toFixed(2)}
                     </td>
                   </tr>
                 ))
